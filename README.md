@@ -14,7 +14,7 @@ You need to have Docker and docker-compose installed on your machine.
 
 1. Clone this repository:
 
-```
+```bash
 git clone https://github.com/pauloamj/setlist-spotify.git
 cd setlist-spotify
 
@@ -26,7 +26,6 @@ cd setlist-spotify
 setlist_key=
 SPOTIFY_ACCESS_TOKEN=
 SPOTIFY_USER_ID=
-
 ```
 
 To get a Setlist.fm API key, visit [setlist.fm](https://www.setlist.fm/settings/api).
@@ -39,14 +38,14 @@ To get your Spotify User ID, click on the share button on your Spotify profile, 
 
 4. Build the Docker container:
 
-```
+```bash
 docker-compose build
 
 ```
 
 5. Run the Docker container:
 
-```
+```bash
 docker-compose up --force-recreate
 
 ```
