@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  setlistspotify:
+    image: setlistspotify
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./src:/app/
+    env_file:
+      - ./.env
