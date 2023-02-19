@@ -15,7 +15,7 @@ You need to have Docker and docker-compose installed on your machine.
 1. Clone this repository:
 
 ```bash
-git clone https://github.com/pauloamj/setlist-spotify.git
+git clone https://github.com/pauloamj/setlistspotify.git
 cd setlist-spotify
 
 ```
@@ -28,11 +28,11 @@ SPOTIFY_ACCESS_TOKEN=
 SPOTIFY_USER_ID=
 ```
 
-To get a Setlist.fm API key, visit [setlist.fm](https://www.setlist.fm/settings/api).
+*To get a Setlist.fm API key, visit [setlist.fm](https://www.setlist.fm/settings/api).*
 
-To get a Spotify Access Token, go to the [Spotify Console](https://developer.spotify.com/console/post-playlist-tracks/) and click on the "Get Token" button.
+*To get a Spotify Access Token, go to the [Spotify Console](https://developer.spotify.com/console/post-playlist-tracks/) and click on the "Get Token" button.*
 
-To get your Spotify User ID, click on the share button on your Spotify profile, and copy the string of numbers in the URL.
+*To get your Spotify User ID, click on the share button on your Spotify profile, and copy the string of numbers in the URL.*
 
 3. Open `src/main.py` and replace the value of the `url` variable with the URL of the Setlist.fm page you want to create a playlist for.
 
