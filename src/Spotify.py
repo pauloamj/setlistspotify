@@ -1,49 +1,39 @@
-from email import header
-from urllib import request
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
-import requests
 import os
 
 load_dotenv()
 
 class SpotifyAPI:
     def __init__(self) -> None:
-        self.user_id = os.getenv('SPOTIFY_USER_ID')
-        self.access_token = os.getenv('SPOTIFY_ACCESS_TOKEN')
-        self.headers = {
-            "Authorization": f"Bearer {self.access_token}",
-            "Content-Type": "application/json"
-        }
+        self.client_id = os.getenv('SPOTIFY_CLIENT_ID')
+        self.client_secret = os.getenv('SPOTIFY_CLIENT_SECRET')
+        self.redirect_uri = os.getenv('SPOTIFY_REDIRECT_URI')
+
+        # Authorization scopes to define permissions
+        self.scope = 'playlist-modify-private,playlist-modify-public'
+        # User authorization
+        self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=self.client_id, client_secret=self.client_secret, redirect_uri=self.redirect_uri, scope=self.scope))
+        self.user_id = self.sp.me()['id']
 
     def get_track_uri(self, track, artist):
-        url = 'https://api.spotify.com/v1/search'
-        params = {
-            "q": f"{track} {artist}",
-            "type": "track"
-        }
-        print(f"Searching {track} by {artist}...")
-        r = requests.request("GET", url=url, headers=self.headers, params=params)
-        return r.json()["tracks"]["items"][0]["uri"]
-    
+        results = self.sp.search(q=f'{track} {artist}', type='track')
+        if len(results['tracks']['items']) > 0:
+            return results['tracks']['items'][0]['uri']
+        else:
+            return None
+
     def create_playlist(self, info):
-        url = f'https://api.spotify.com/v1/users/{self.user_id}/playlists'
-        json = {
-            "name": f"{info['artist']} @ {info['venue']} | {info['date']}",
-            "public": "false"
-            }
+        playlist_name = f"{info['artist']} @ {info['venue']} | {info['date']}"
         print("Creating playlist...")
-        r = requests.request("POST", url=url, json=json, headers=self.headers)
-        playlist_id =  r.json()["id"]
+        playlist = self.sp.user_playlist_create(user=self.user_id, name=playlist_name, public=True, description="Created from the setlist")
+        playlist_id = playlist["id"]
         return playlist_id
-    
+
     def add_items_to_playlist(self, playlist_id, track_uris):
-        url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
-        json = {
-            "uris": track_uris
-        }
         print("Adding items to playlist...")
-        return requests.request("POST", url=url, json=json, headers=self.headers)
-        
+        return self.sp.playlist_add_items(playlist_id, track_uris)
 
     def get_track_uri_list(self, song_list, info):
         track_uris = []
@@ -51,9 +41,13 @@ class SpotifyAPI:
             uri = self.get_track_uri(song["name"], info["artist"])
             track_uris.append(uri)
         return track_uris
-    
+
     def play(self, info, song_list):
-        playlist_id = self.create_playlist(info)
+        print("get tracks")
         track_uris = self.get_track_uri_list(song_list, info)
+        print("create playlist")
+        playlist_id = self.create_playlist(info)
+        print("add items")
         response = self.add_items_to_playlist(playlist_id, track_uris)
         return response
+    
